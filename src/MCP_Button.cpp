@@ -1,18 +1,19 @@
-// Arduino Button Library
+// Arduino MCP_Button Library
 // https://github.com/JChristensen/JC_Button
 // Copyright (C) 2018 by Jack Christensen and licensed under
 // GNU GPL v3.0, https://www.gnu.org/licenses/gpl.html
 
-#include "JC_Button.h"
+#include "MCP_Button.h"
 
 /*----------------------------------------------------------------------*
-/ initialize a Button object and the pin it's connected to.             *
+/ initialize a MCP_Button object and the pin it's connected to.             *
 /-----------------------------------------------------------------------*/
-void Button::begin()
+void MCP_Button::begin()
 {
     pinMode(m_pin, m_puEnable ? INPUT_PULLUP : INPUT);
     m_state = digitalRead(m_pin);
-    if (m_invert) m_state = !m_state;
+    if (m_invert)
+        m_state = !m_state;
     m_time = millis();
     m_lastState = m_state;
     m_changed = false;
@@ -23,11 +24,12 @@ void Button::begin()
 / returns the state of the button, true if pressed, false if released.  *
 / does debouncing, captures and maintains times, previous state, etc.   *
 /-----------------------------------------------------------------------*/
-bool Button::read()
+bool MCP_Button::read()
 {
     uint32_t ms = millis();
     bool pinVal = digitalRead(m_pin);
-    if (m_invert) pinVal = !pinVal;
+    if (m_invert)
+        pinVal = !pinVal;
     if (ms - m_lastChange < m_dbTime)
     {
         m_changed = false;
@@ -37,7 +39,8 @@ bool Button::read()
         m_lastState = m_state;
         m_state = pinVal;
         m_changed = (m_state != m_lastState);
-        if (m_changed) m_lastChange = ms;
+        if (m_changed)
+            m_lastChange = ms;
     }
     m_time = ms;
     return m_state;
@@ -48,12 +51,12 @@ bool Button::read()
  * read, and return false (0) or true (!=0) accordingly.                *
  * These functions do not cause the button to be read.                  *
  *----------------------------------------------------------------------*/
-bool Button::isPressed()
+bool MCP_Button::isPressed()
 {
     return m_state;
 }
 
-bool Button::isReleased()
+bool MCP_Button::isReleased()
 {
     return !m_state;
 }
@@ -64,12 +67,12 @@ bool Button::isReleased()
  * true (!=0) accordingly.                                              *
  * These functions do not cause the button to be read.                  *
  *----------------------------------------------------------------------*/
-bool Button::wasPressed()
+bool MCP_Button::wasPressed()
 {
     return m_state && m_changed;
 }
 
-bool Button::wasReleased()
+bool MCP_Button::wasReleased()
 {
     return !m_state && m_changed;
 }
@@ -80,12 +83,12 @@ bool Button::wasReleased()
  * time in milliseconds. Returns false (0) or true (!=0) accordingly.   *
  * These functions do not cause the button to be read.                  *
  *----------------------------------------------------------------------*/
-bool Button::pressedFor(uint32_t ms)
+bool MCP_Button::pressedFor(uint32_t ms)
 {
     return m_state && m_time - m_lastChange >= ms;
 }
 
-bool Button::releasedFor(uint32_t ms)
+bool MCP_Button::releasedFor(uint32_t ms)
 {
     return !m_state && m_time - m_lastChange >= ms;
 }
@@ -94,7 +97,7 @@ bool Button::releasedFor(uint32_t ms)
  * lastChange() returns the time the button last changed state,         *
  * in milliseconds.                                                     *
  *----------------------------------------------------------------------*/
-uint32_t Button::lastChange()
+uint32_t MCP_Button::lastChange()
 {
     return m_lastChange;
 }

@@ -1,16 +1,12 @@
-// Arduino Button Library
-// https://github.com/JChristensen/JC_Button
-// Copyright (C) 2018 by Jack Christensen and licensed under
-// GNU GPL v3.0, https://www.gnu.org/licenses/gpl.html
-
-#ifndef JC_MCP_BUTTON_H_INCLUDED
-#define JC_MCP_BUTTON_H_INCLUDED
+#ifndef JC_MCP23X17_BUTTON_H_INCLUDED
+#define JC_MCP23X17_BUTTON_H_INCLUDED
 
 #include <Arduino.h>
+#include <Adafruit_MCP23X08.h>
 
-class MCP_Button
+class MCP23X08_Button
 {
-protected:
+public:
     // MCP_Button(pin, dbTime, puEnable, invert) instantiates a button object.
     //
     // Required parameter:
@@ -20,8 +16,16 @@ protected:
     // dbTime   Debounce time in milliseconds (default 25ms)
     // puEnable true to enable the AVR internal pullup resistor (default true)
     // invert   true to interpret a low logic level as pressed (default true)
-    MCP_Button(uint8_t pin, uint32_t dbTime = 25, uint8_t puEnable = true, uint8_t invert = true)
-        : m_pin(pin), m_dbTime(dbTime), m_puEnable(puEnable), m_invert(invert) {}
+    MCP23X08_Button(Adafruit_MCP23X08 &mcp,
+                    uint8_t mcp_pin,
+                    uint32_t mcp_dbTime = 25,
+                    uint8_t mcp_puEnable = true,
+                    uint8_t mcp_invert = true)
+        : mcp_register(mcp),
+          m_pin(mcp_pin),
+          m_dbTime(mcp_dbTime),
+          m_puEnable(mcp_puEnable),
+          m_invert(mcp_invert) {}
 
     // Initialize a MCP_Button object and the pin it's connected to
     void begin();
@@ -30,9 +34,6 @@ protected:
     // false for released. Call this function frequently to ensure
     // the sketch is responsive to user input.
     bool read();
-
-    // Returns true if the button state was pressed at the last call to read().
-    // Does not cause the button to be read.
     bool isPressed();
 
     // Returns true if the button state was released at the last call to read().
@@ -60,6 +61,7 @@ protected:
     uint32_t lastChange();
 
 private:
+    Adafruit_MCP23X08 &mcp_register;
     uint8_t m_pin;         // arduino pin number connected to button
     uint32_t m_dbTime;     // debounce time (ms)
     bool m_puEnable;       // internal pullup resistor enabled

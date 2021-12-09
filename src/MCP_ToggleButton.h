@@ -3,8 +3,8 @@
 // Copyright (C) 2018 by Jack Christensen and licensed under
 // GNU GPL v3.0, https://www.gnu.org/licenses/gpl.html
 
-#ifndef JC_MCP_TOGGLEBUTTON_H_INCLUDED
-#define JC_MCP_TOGGLEBUTTON_H_INCLUDED
+/*#ifndef JC_MCP_TOGGLEBUTTON_H
+#define JC_MCP_TOGGLEBUTTON_H
 
 #include <Arduino.h>
 #include "MCP_Button.h"
@@ -29,7 +29,6 @@ protected:
     // return the current state
     bool toggleState();
 
-private:
     bool m_toggleState;
     bool m_changed;
-};
+};*/

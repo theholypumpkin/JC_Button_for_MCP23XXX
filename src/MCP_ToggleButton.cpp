@@ -3,7 +3,7 @@
 // Copyright (C) 2018 by Jack Christensen and licensed under
 // GNU GPL v3.0, https://www.gnu.org/licenses/gpl.html
 
-#include "MCP_Button.h"
+/*#include "MCP_Button.h"
 #include "MCP_ToggleButton.h"
 
 bool MCP_ToggleButton::read()
@@ -30,4 +30,4 @@ bool MCP_ToggleButton::changed()
 bool MCP_ToggleButton::toggleState()
 {
     return m_toggleState;
-}
+}*/

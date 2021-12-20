@@ -2,77 +2,56 @@
 #define JC_MCP23X17_BUTTON_H_INCLUDED
 
 #include <Arduino.h>
+#include <MCP23XXX_Button.h>
 #include <Adafruit_MCP23X17.h>
+#include <LinkedList.h>
+#include <ArxContainer.h>
 
-class MCP23X17_Button{
-    public:
-      // MCP_Button(pin, dbTime, puEnable, invert) instantiates a button object.
-      //
-      // Required parameter:
-      // pin      The Arduino pin the button is connected to
-      //
-      // Optional parameters:
-      // dbTime   Debounce time in milliseconds (default 25ms)
-      // puEnable true to enable the AVR internal pullup resistor (default true)
-      // invert   true to interpret a low logic level as pressed (default true)
-      MCP23X17_Button(Adafruit_MCP23X17& mcp,
-                  uint8_t mcp_pin, 
-                  uint32_t mcp_dbTime = 25, 
-                  uint8_t mcp_puEnable = true, 
-                  uint8_t mcp_invert = true
-                )
-      : mcp_register(mcp), 
-        m_pin(mcp_pin), 
-        m_dbTime(mcp_dbTime), 
-        m_puEnable(mcp_puEnable), 
-        m_invert(mcp_invert){}
+class MCP23X17_Button {
+  public:
+    // MCP_Button(pin, dbTime, puEnable, invert) instantiates a button object.
+    //
+    // Required parameter:
+    // pin      The Arduino pin the button is connected to
+    //
+    // Optional parameters:
+    // dbTime   Debounce time in milliseconds (default 25ms)
+    // puEnable true to enable the AVR internal pullup resistor (default true)
+    // invert   true to interpret a low logic level as pressed (default true)
+    MCP23X17_Button(Adafruit_MCP23X17& mcp,
+                    uint8_t mcp_pin,
+                    uint32_t mcp_dbTime = 25,
+                    uint8_t mcp_puEnable = true,
+                    uint8_t mcp_invert = true
+                   )
+    MCP23XXX_Button(mcp_pin, mcp_dbTime, mcp_puEnable, mcp_invert),
+    : mcp_register(mcp)
+    {
+      m_id = m_gbl_id++;
+      allButtons[m_id] = this;
+    }
 
-      // Initialize a MCP_Button object and the pin it's connected to
-      void begin();
+    // Initialize a MCP_Button object and the pin it's connected to
+    void begin();
 
-      // Returns the current debounced button state, true for pressed,
-      // false for released. Call this function frequently to ensure
-      // the sketch is responsive to user input.
-      bool read();
+    // Returns the current debounced button state, true for pressed,
+    // false for released. Call this function frequently to ensure
+    // the sketch is responsive to user input.
+    bool read();
 
-      // Returns true if the button state was pressed at the last call to read().
-      // Does not cause the button to be read.
-      bool isPressed();
+    //TODO this method ist jank and will be improved in the future
+    static void readAll(LinkedList<Adafruit_MCP23X17> *list);
 
-      // Returns true if the button state was released at the last call to read().
-      // Does not cause the button to be read.
-      bool isReleased();
+    static std::map<uint8_t, MCP23X17_Button*>& getAllButtons();
 
-      // Returns true if the button state at the last call to read() was pressed,
-      // and this was a change since the previous read.
-      bool wasPressed();
+  private:
+    Adafruit_MCP23X17& mcp_register;
 
-      // Returns true if the button state at the last call to read() was released,
-      // and this was a change since the previous read.
-      bool wasReleased();
+    //TODO both static parameters map should take MCP23XXX_Buttons as Objects and be implemented in the MCP23XXX_Button class not here
+    static std::map<uint8_t, MCP23X17_Button*> allButtons;
+    static uint8_t m_gbl_id; // a golbal id for each object created
 
-      // Returns true if the button state at the last call to read() was pressed,
-      // and has been in that state for at least the given number of milliseconds.
-      bool pressedFor(uint32_t ms);
-
-      // Returns true if the button state at the last call to read() was released,
-      // and has been in that state for at least the given number of milliseconds.
-      bool releasedFor(uint32_t ms);
-
-      // Returns the time in milliseconds (from millis) that the button last
-      // changed state.
-      uint32_t lastChange();
-
-    private:
-      Adafruit_MCP23X17& mcp_register;
-      uint8_t m_pin;         // arduino pin number connected to button
-      uint32_t m_dbTime;     // debounce time (ms)
-      bool m_puEnable;       // internal pullup resistor enabled
-      bool m_invert;         // if true, interpret logic low as pressed, else interpret logic high as pressed
-      bool m_state;          // current button state, true=pressed
-      bool m_lastState;      // previous button state
-      bool m_changed;        // state changed since last read
-      uint32_t m_time;       // time of current state (ms from millis)
-      uint32_t m_lastChange; // time of last state change (ms)
+    uint8_t m_id;          // the id of the object is automatically assigned by the constructor
+    
 };
 #endif
